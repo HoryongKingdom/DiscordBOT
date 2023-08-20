@@ -2,8 +2,8 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("핑")
-    .setDescription("현재 봇의 상태를 출력해요!"),
+    .setName("도움말")
+    .setDescription("젠디를 사용하는 방법을 알려드릴게요!"),
   /**
    *
    * @param {import('discord.js').CommandInteraction} interaction

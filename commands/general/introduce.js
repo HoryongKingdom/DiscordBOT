@@ -24,7 +24,7 @@ module.exports = {
       .setColor("#4f5fab")
       .setFooter({
         text: user.displayName,
-        iconURL: userAvatarURL,
+        iconURL: user.displayAvatarURL({ dynamic: true }),
       })
       .setTimestamp()
       .addFields(
