@@ -11,7 +11,7 @@ module.exports = {
     console.log(`${client.user.tag} 로그인`);
 
     client.user.setActivity({
-      name: `'/도움말'로 봇 사용`,
+      name: `'/도움말'로 봇 사용!`,
       type: ActivityType.Playing,
     });
   },
