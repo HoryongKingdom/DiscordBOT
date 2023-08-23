@@ -5,7 +5,7 @@ dotenv.config();
 const { Client, Collection, REST, Routes } = require('discord.js');
 const client = (module.exports = new Client({ intents: [ 131071 ] }));
 module.exports = client;
-client.login(process.env['TOKEN']);
+client.login(process.env.TOKEN);
 
 const fs = require('fs');
 
