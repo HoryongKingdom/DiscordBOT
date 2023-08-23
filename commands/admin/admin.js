@@ -4,7 +4,8 @@ const {
 	EmbedBuilder,
 	ActionRowBuilder,
 	ButtonBuilder,
-	ButtonStyle,
+	ButtonStyle, ModalBuilder, TextInputBuilder,
+	TextInputStyle
 } = require('discord.js');
 
 module.exports = {
@@ -70,7 +71,32 @@ module.exports = {
 				});
 			}
 		} else if (category === 'ver') {
-		
+			const modal = new ModalBuilder()
+				.setCustomId('modal-dev-ver')
+				.setTitle('인증 생성')
+
+			const title = new TextInputBuilder()
+				.setCustomId('input-dev-ver-title')
+				.setPlaceholder('인증 제목을 입력해주세요!')
+				.setMinLength(1)
+				.setRequired(true)
+				.setLabel('인증 제목')
+				.setStyle(TextInputStyle.Short);
+
+			const description = new TextInputBuilder()
+				.setCustomId('input-dev-ver-description')
+				.setPlaceholder('인증 설명을 입력해주세요!')
+				.setMinLength(1)
+				.setRequired(true)
+				.setLabel('인증 설명')
+				.setStyle(TextInputStyle.Paragraph);
+
+			const titleActionRow = new ActionRowBuilder().addComponents(title);
+			const descriptionActionRow = new ActionRowBuilder().addComponents(description);
+
+			modal.addComponents(titleActionRow, descriptionActionRow);
+
+			await interaction.showModal(modal)
 		}
 	},
 };
