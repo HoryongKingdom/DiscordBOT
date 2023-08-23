@@ -1,8 +1,9 @@
-const { ChannelType } = require("discord.js");
-const client = require("../index");
+const { ChannelType, Events } =require( 'discord.js')
+
+const client = require('../index');
 
 module.exports = {
-  name: "interactionCreate",
+  name: Events.InteractionCreate,
   once: false,
   /**
    *

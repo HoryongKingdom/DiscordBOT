@@ -17,7 +17,7 @@ module.exports = {
 				.setName('기능')
 				.setDescription('사용할 기능을 선택해주세요!')
 				.setRequired(true)
-				.addChoices({ name: '콘솔', value: 'console' }),
+				.addChoices({ name: '콘솔', value: 'console' }, { name: '인증생성', value: 'ver' }),
 		),
 	/**
 	 *
@@ -69,6 +69,8 @@ module.exports = {
 					ephemeral: true,
 				});
 			}
+		} else if (category === 'ver') {
+		
 		}
 	},
 };
