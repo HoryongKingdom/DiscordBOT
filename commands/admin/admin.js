@@ -5,7 +5,7 @@ const {
 	ActionRowBuilder,
 	ButtonBuilder,
 	ButtonStyle, ModalBuilder, TextInputBuilder,
-	TextInputStyle
+	TextInputStyle,
 } = require('discord.js');
 
 module.exports = {
@@ -50,9 +50,9 @@ module.exports = {
 				});
 			const button = new ActionRowBuilder().addComponents(
 				new ButtonBuilder()
+					.setCustomId('btn-dev-ver')
 					.setLabel('인증 생성')
 					.setEmoji('✅')
-					.setCustomId('btn-dev-ver')
 					.setStyle(ButtonStyle.Secondary),
 			);
 			try {
@@ -73,30 +73,79 @@ module.exports = {
 		} else if (category === 'ver') {
 			const modal = new ModalBuilder()
 				.setCustomId('modal-dev-ver')
-				.setTitle('인증 생성')
-
+				.setTitle('인증 생성');
 			const title = new TextInputBuilder()
 				.setCustomId('input-dev-ver-title')
-				.setPlaceholder('인증 제목을 입력해주세요!')
-				.setMinLength(1)
+				.setPlaceholder('인증(임베드) 제목을 입력해주세요!')
+				.setMinLength(2)
 				.setRequired(true)
-				.setLabel('인증 제목')
+				.setLabel('제목')
 				.setStyle(TextInputStyle.Short);
-
 			const description = new TextInputBuilder()
 				.setCustomId('input-dev-ver-description')
-				.setPlaceholder('인증 설명을 입력해주세요!')
+				.setPlaceholder('인증(임베드) 설명을 입력해주세요!')
 				.setMinLength(1)
 				.setRequired(true)
-				.setLabel('인증 설명')
+				.setLabel('설명')
 				.setStyle(TextInputStyle.Paragraph);
-
 			const titleActionRow = new ActionRowBuilder().addComponents(title);
 			const descriptionActionRow = new ActionRowBuilder().addComponents(description);
-
 			modal.addComponents(titleActionRow, descriptionActionRow);
-
-			await interaction.showModal(modal)
+			
+			const button = new ActionRowBuilder().addComponents(
+				new ButtonBuilder()
+					.setCustomId('btn-dev-ver-yes')
+					.setLabel('생성하기')
+					.setEmoji('✅')
+					.setStyle(ButtonStyle.Success),
+				new ButtonBuilder()
+					.setCustomId('btn-dev-ver-no')
+					.setLabel('취소하기')
+					.setEmoji('⛔')
+					.setStyle(ButtonStyle.Danger),
+			);
+			
+			const msg = await interaction.reply({
+				content: '**인증 기능을 현재 채널에 생성할까요?**',
+				ephemeral: true,
+				components: [ button ],
+			});
+			
+			const collector = msg.createMessageComponentCollector({
+				filter: (i) => i.user.id == interaction.user.id,
+				max: 1,
+			});
+			collector.on('collect', async (inter) => {
+				if (inter.customId != 'btn-dev-ver-yes' || 'btn-dev-ver-no') {
+					interaction.deleteReply();
+					return;
+				} else if (inter.customId === 'btn-dev-ver-yes') {
+					await interaction.showModal(modal);
+					try {
+						const embed = new EmbedBuilder()
+							.setTitle(title)
+							.setDescription(description)
+							.setColor('Green');
+						const button = new ActionRowBuilder().addComponents(
+							new ButtonBuilder()
+								.setCustomId('btn-ver')
+								.setLabel('인증하기')
+								.setEmoji('✅')
+								.setStyle(ButtonStyle.Success),
+						);
+						await interaction.editReply({
+							content: `${ checkmark }ㅣ**성공적으로 인증을 ${ inter.channel }에 생성했어요!`,
+							components: [],
+						});
+						await inter.channel.send({ embeds: [ embed ], components: [ button ] });
+					} catch (error) {
+						console.log(error);
+						await interaction.editReply(({ content: `${ cross }ㅣ**인증을 생성하는 중에 예상치 못한 오류가 발생했어요! 고객센터에 문의해주세요! ||https://discord.gg/uCnSnwpYge||**` }));
+					}
+				} else if (inter.customId === 'btn-dev-ver-no') {
+					await interaction.deleteReply();
+				}
+			});
 		}
 	},
 };
