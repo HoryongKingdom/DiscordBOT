@@ -1,4 +1,5 @@
 const { Events, EmbedBuilder } = require('discord.js');
+const { Captcha } = require('discord.js-captcha');
 
 module.exports = {
 	name: Events.InteractionCreate,
@@ -8,6 +9,10 @@ module.exports = {
 	 * @param {import('discord.js').CommandInteraction} interaction
 	 */
 	async execute(interaction) {
+		const checkmark = interaction.client.emojis.cache.get(
+			'1142775488054562948',
+		);
+		const cross = interaction.client.emojis.cache.get('1142775482132217868');
 		if (!interaction.isButton()) return;
 		const user = interaction.user;
 		if (interaction.customId === 'btn-dev-ver') {
@@ -27,6 +32,41 @@ module.exports = {
 					inline: true,
 				});
 			await interaction.reply({ embeds: [ embed ], ephemeral: true });
+		} else if (interaction.customId === 'btn-ver') {
+			const crole = interaction.guild.roles.cache.find(role => role.name === '젠디 인증');
+			if (crole != null || undefined) {
+				const captcha = new Captcha(interaction.client, {
+					roleID: crole.id,
+					addRoleOnSuccess: true,
+					kickOnFailure: false,
+					caseSensitive: true,
+					attempts: 3,
+					timeout: 30000,
+					showAttemptCount: true,
+					customPromptEmbed: new EmbedBuilder().setTitle('캡챠 인증하기')
+						.setDescription(
+							'아래 이미지의 영어를 대소문자 구분해서 채팅창에 입력해주세요!',
+						)
+						.setColor('#4f5fab')
+						.setTimestamp(),
+					customSuccessEmbed: new EmbedBuilder().setTitle('✅ 인증 성공!')
+						.setDescription(
+							'인증 역할을 부여했어요! 서버에서 즐거운 시간 되세요!',
+						)
+						.setColor('#4f5fab')
+						.setTimestamp(),
+					customFailureEmbed: new EmbedBuilder().setTitle('⛔ 인증 실패')
+						.setDescription(
+							'캡챠 인증을 다시 시도해주세요!',
+						)
+						.setColor('#4f5fab')
+						.setTimestamp(),
+				});
+				await interaction.reply({ content: `${ checkmark }ㅣ**캡챠 인증을 DM으로 전송했어요! DM을 확인해주세요!**`, ephemeral: true });
+				await captcha.present(interaction.member);
+			} else {
+				await interaction.reply({ content: `${ cross }ㅣ**인증 역할이 설정되지 않았습니다! 서버 관리자에게 문의해주세요!**`, ephemeral: true });
+			}
 		}
 	},
 };

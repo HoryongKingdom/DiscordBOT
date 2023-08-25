@@ -29,11 +29,12 @@ module.exports = {
 						.setStyle(ButtonStyle.Success),
 				);
 				const crole = await interaction.guild.roles.create({
-					name: '인증 역할',
+					name: '젠디 인증',
 					color: 'Green',
 				});
+				
 				await interaction.reply({
-					content: `${ checkmark }ㅣ**성공적으로 인증을 ${ interaction.channel }에 생성했어요!\n인증 역할(${ crole })을 생성했으니, 생성된 역할을 커스터마이징 해주세요!**`,
+					content: `${ checkmark }ㅣ**성공적으로 인증을 ${ interaction.channel }에 생성했어요!\n인증 역할(${ crole })을 생성했으니, 생성된 역할을 커스터마이징 해주세요! 역할의 이름을 변경하면, 인증이 정상적으로 작동하지 않을 수 있습니다!**`,
 					components: [],
 					ephemeral: true,
 				});
