@@ -75,14 +75,14 @@ module.exports = {
 				.setCustomId('modal-dev-ver')
 				.setTitle('인증 생성');
 			const title = new TextInputBuilder()
-				.setCustomId('input-dev-ver-title')
+				.setCustomId('modal-dev-ver-title')
 				.setPlaceholder('인증(임베드) 제목을 입력해주세요!')
 				.setMinLength(2)
 				.setRequired(true)
 				.setLabel('제목')
 				.setStyle(TextInputStyle.Short);
 			const description = new TextInputBuilder()
-				.setCustomId('input-dev-ver-description')
+				.setCustomId('modal-dev-ver-description')
 				.setPlaceholder('인증(임베드) 설명을 입력해주세요!')
 				.setMinLength(1)
 				.setRequired(true)
@@ -121,27 +121,6 @@ module.exports = {
 					return;
 				} else if (inter.customId === 'btn-dev-ver-yes') {
 					await interaction.showModal(modal);
-					try {
-						const embed = new EmbedBuilder()
-							.setTitle(title)
-							.setDescription(description)
-							.setColor('Green');
-						const button = new ActionRowBuilder().addComponents(
-							new ButtonBuilder()
-								.setCustomId('btn-ver')
-								.setLabel('인증하기')
-								.setEmoji('✅')
-								.setStyle(ButtonStyle.Success),
-						);
-						await interaction.editReply({
-							content: `${ checkmark }ㅣ**성공적으로 인증을 ${ inter.channel }에 생성했어요!`,
-							components: [],
-						});
-						await inter.channel.send({ embeds: [ embed ], components: [ button ] });
-					} catch (error) {
-						console.log(error);
-						await interaction.editReply(({ content: `${ cross }ㅣ**인증을 생성하는 중에 예상치 못한 오류가 발생했어요! 고객센터에 문의해주세요! ||https://discord.gg/uCnSnwpYge||**` }));
-					}
 				} else if (inter.customId === 'btn-dev-ver-no') {
 					await interaction.deleteReply();
 				}
