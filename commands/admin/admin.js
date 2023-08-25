@@ -116,11 +116,9 @@ module.exports = {
 				max: 1,
 			});
 			collector.on('collect', async (inter) => {
-				if (inter.customId != 'btn-dev-ver-yes' || 'btn-dev-ver-no') {
-					interaction.deleteReply();
-					return;
-				} else if (inter.customId === 'btn-dev-ver-yes') {
-					await interaction.showModal(modal);
+				if (inter.customId === 'btn-dev-ver-yes') {
+					await interaction.deleteReply();
+					await inter.showModal(modal);
 				} else if (inter.customId === 'btn-dev-ver-no') {
 					await interaction.deleteReply();
 				}
