@@ -28,8 +28,12 @@ module.exports = {
 						.setEmoji('✅')
 						.setStyle(ButtonStyle.Success),
 				);
+				const crole = await interaction.guild.roles.create({
+					name: '인증 역할',
+					color: 'Green',
+				});
 				await interaction.reply({
-					content: `${ checkmark }ㅣ**성공적으로 인증을 ${ interaction.channel }에 생성했어요!**`,
+					content: `${ checkmark }ㅣ**성공적으로 인증을 ${ interaction.channel }에 생성했어요!\n인증 역할(${ crole })을 생성했으니, 생성된 역할을 커스터마이징 해주세요!**`,
 					components: [],
 					ephemeral: true,
 				});
