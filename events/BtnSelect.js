@@ -34,7 +34,7 @@ module.exports = {
 			await interaction.reply({ embeds: [ embed ], ephemeral: true });
 		} else if (interaction.customId === 'btn-ver') {
 			const crole = interaction.guild.roles.cache.find(role => role.name === '젠디 인증');
-			if (crole != undefined || null) {
+			if (crole !== undefined || null) {
 				if (interaction.member.roles.cache.has(crole.id) === false) {
 					try {
 						const captcha = new Captcha(interaction.client, {
