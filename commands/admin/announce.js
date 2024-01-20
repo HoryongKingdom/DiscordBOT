@@ -7,7 +7,7 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('공지')
 		.setDescription('[관리자] 공지를 작성해요.')
-		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+		.setDefaultMemberPermissions(PermissionFlagsBits.CreateEvents)
 		.addStringOption(option => option.setName('제목').setDescription('공지의 제목을 입력해주세요.').setRequired(true))
 		.addStringOption(option => option.setName('내용').setDescription('공지의 내용을 입력해주세요.').setRequired(true))
 		.addRoleOption(option => option.setName('멘션').setDescription('어떤 역할을 멘션할까요?').setRequired(false))
