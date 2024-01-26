@@ -1,12 +1,9 @@
 const {
-	Events,
-	EmbedBuilder,
-	ModalBuilder,
-	TextInputBuilder,
-	TextInputStyle,
-	ActionRowBuilder,
+	Events, EmbedBuilder,
 } = require('discord.js');
 const { Captcha } = require('discord.js-captcha');
+const client = require('../index');
+const CaptchaDB = require('../Schema/Captcha');
 
 module.exports = {
 	name: Events.InteractionCreate,
@@ -16,44 +13,47 @@ module.exports = {
 	 * @param {import('discord.js').CommandInteraction} interaction
 	 */
 	async execute(interaction) {
-		const checkmark = interaction.client.emojis.cache.get(
-			'1142775488054562948',
-		);
-		const cross = interaction.client.emojis.cache.get('1142775482132217868');
-		if (!interaction.isButton()) return;
-		if (interaction.customId === 'btn-voice') {
-			const modal = new ModalBuilder()
-				.setTitle('음성 방 설정하기')
-				.setCustomId('modal-voice');
-			const title = new TextInputBuilder()
-				.setCustomId('modal-voice-title')
-				.setRequired(true)
-				.setStyle(TextInputStyle.Short)
-				.setMinLength(1)
-				.setMaxLength(10)
-				.setLabel('음성 방의 이름을 설정해주세요!')
-				.setPlaceholder('\'/음성방 이름변경\'으로 추후 변경 가능.');
-			const people = new TextInputBuilder()
-				.setCustomId('modal-voice-people')
-				.setRequired(false)
-				.setStyle(TextInputStyle.Short)
-				.setMinLength(1)
-				.setMaxLength(2)
-				.setLabel('음성 방의 인원 수를 설정해주세요! (0일시 무제한)')
-				.setPlaceholder('\'/음성방 인원변경\'으로 추후 변경 가능.');
-			const mention = new TextInputBuilder()
-				.setCustomId('modal-voice-mention')
-				.setRequired(true)
-				.setStyle(TextInputStyle.Short)
-				.setMinLength(1)
-				.setMaxLength(8)
-				.setLabel('어느 사람을 멘션할까요?')
-				.setPlaceholder('[no/here/everyone/멤버/컨텐츠팀] 중 입력');
-			const titleup = new ActionRowBuilder().addComponents(title);
-			const peopleup = new ActionRowBuilder().addComponents(people);
-			const mentionup = new ActionRowBuilder().addComponents(mention);
-			modal.addComponents(titleup, peopleup, mentionup);
-			await interaction.showModal(modal);
+		if (interaction.customId === 'btn-captcha') {
+			const data = CaptchaDB.find({
+				GuildId: interaction.guild.id,
+			});
+			let roleid;
+			for await (const doc of data) {
+				roleid = doc.RoleId;
+			}
+			const error = new EmbedBuilder()
+				.setTitle('⚠ㅣ캡챠를 보내는데 실패했어요!')
+				.setDescription(`서버 우클릭 -> 개인정보 보호 설정 -> '다이렉트 메세지'가 켜져 있는지 확인해주세요!\n'다이렉트 메세지'가 켜져 있는데도 되지 않는다면, 서버 관리자에게 권한 및 역할 확인을 요청해주세요! 서버 세팅이 잘못 되어 인증이 불가합니다! 관리자에게 문의해주세요.`)
+				.setColor('Red')
+				.setFooter({
+					text: interaction.user.displayName,
+					iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
+				})
+				.setTimestamp();
+			if (roleid === undefined) return await interaction.reply({ embeds: [ error ], ephemeral: true });
+			try {
+				const captcha = new Captcha(client, {
+					roleID: roleid,
+					sendToTextChannel: false,
+					addRoleOnSuccess: true,
+					kickOnFailure: false,
+					caseSensitive: true,
+					attempts: 3,
+					timeout: 30000,
+					showAttemptCount: true,
+					customPromptEmbed: new EmbedBuilder()
+						.setTitle('✅ㅣ인증을 시작합니다!').setDescription('아래 영어 + 숫자를 이 채널의 DM에 대소문자를 구분하여 입력해주세요!').setColor('Green').setTimestamp(),
+					customSuccessEmbed: new EmbedBuilder()
+						.setTitle('✅ㅣ인증 완료!').setDescription(`인증이 완료되었습니다! 인증 역할이 지급되었어요!`).setColor('Green').setTimestamp(),
+					customFailureEmbed: new EmbedBuilder()
+						.setTitle('❌ㅣ인증에 실패했어요!').setDescription('캡챠 인증에 실패했어요! 다시 시도해주세요!').setColor('Red').setTimestamp(),
+				});
+				
+				await captcha.present(interaction.member);
+				await interaction.reply({ content: '### ✅ㅣDM으로 인증 메시지를 전송해드렸어요!', ephemeral: true });
+			} catch (err) {
+				console.error(err);
+			}
 		}
 	},
 };

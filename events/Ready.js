@@ -11,7 +11,7 @@ module.exports = {
 		console.log(`${ client.user.tag } 로그인`);
 		
 		client.user.setActivity({
-			name: `'/소개', 우설은 나의 적.`,
+			name: `'/소개'로 봇을 시작`,
 			type: ActivityType.Playing,
 		});
 	},

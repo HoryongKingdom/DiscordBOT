@@ -7,6 +7,9 @@ dotenv.config();
 
 const fs = require('fs');
 
+const mongoose = require('mongoose');
+const mongoURL = process.env.MONGOURL;
+
 const eventsPath = './events';
 const eventFiles = fs
 	.readdirSync(eventsPath)
@@ -47,5 +50,16 @@ rest
 	.put(Routes.applicationCommands(process.env.ID), { body: commands_json })
 	.then((command) => console.log(`${ command.length }개의 커맨드를 푸쉬했습니다`))
 	.catch(console.error);
+
+if (!mongoURL) return;
+mongoose.connect(mongoURL || '', {
+	useNewUrlParser: true,
+	useUnifiedTopology: true,
+});
+if (mongoose.connect) {
+	console.log('DB 연결 완료!');
+} else {
+	console.log('DB 연결 실패.');
+}
 
 client.login(process.env.TOKEN);

@@ -17,9 +17,9 @@ module.exports = {
 		const userAvatarURL = user.avatarURL() || user.defaultAvatarURL;
 		
 		const embed = new EmbedBuilder()
-			.setTitle('🎉 안녕! 저는 TIGER BOT에요!')
+			.setTitle('🎉 안녕! 저는 젠디에요!')
 			.setDescription(
-				`안녕하세요! **${ user.displayName }**님, 저는 **TIGER BOT**라고 해요\n**${ interaction.guild.name }**를 보호하기 위해 태어났어요!`,
+				`안녕하세요! **${ user.displayName }**님, 저는 **젠디**라고 해요\n**${ interaction.guild.name }**를 보호하기 위해 태어났어요!\n제 명령어가 궁금하신가요? <>`,
 			)
 			.setColor('#4f5fab')
 			.setFooter({
@@ -30,7 +30,7 @@ module.exports = {
 			.addFields(
 				{
 					name: '🏷 이름',
-					value: `>>> TIGER BOT`,
+					value: `>>> 젠디`,
 					inline: true,
 				},
 				{
@@ -50,7 +50,7 @@ module.exports = {
 				},
 				{
 					name: '📛 싫어하는 것',
-					value: `>>> **${ interaction.guild.name }**을 괴롭하는 악마, 우설`,
+					value: `>>> **${ interaction.guild.name }**을 괴롭하는 악마`,
 					inline: true,
 				},
 				{
