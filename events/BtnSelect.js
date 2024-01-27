@@ -50,9 +50,7 @@ module.exports = {
 			try {
 				await interaction.deferReply({ ephemeral: true });
 				await interaction.editReply({ content: '### ✅ㅣDM으로 인증 메시지를 전송해드렸어요!' });
-				setTimeout(async () => {
-					await captcha.present(interaction.member);
-				}, 500);
+				await captcha.present(interaction.member);
 			} catch (err) {
 				console.error(err);
 			}
