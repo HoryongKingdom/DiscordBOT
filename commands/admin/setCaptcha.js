@@ -4,7 +4,7 @@ const {
 	EmbedBuilder,
 	ButtonStyle,
 	ButtonBuilder, ActionRowBuilder,
-	ComponentType,
+	ComponentType, ChannelType,
 } = require('discord.js');
 const CaptchaDB = require('../../Schema/Captcha');
 const mongoose = require('mongoose');
@@ -13,8 +13,8 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('인증')
 		.setDescription('[관리자] 인증 기능을 사용할게요!')
-		.addSubcommand(subcommand => subcommand.setName('설정').setDescription('인증 기능을 시작할게요! 인증 버튼은 1개만 사용 가능합니다.').addChannelOption(option => option.setName('채널').setDescription('인증 버튼을 생성하려는 채널을 선택 해주세요!').setRequired(true)).addRoleOption(option => option.setName('역할').setDescription('인증 완료 시 지급할 역할을 선택 해주세요!').setRequired(true)))
-		.addSubcommand(subcommand => subcommand.setName('삭제').setDescription('인증 기능을 삭제할게요! 인증 버튼은 1개만 사용 가능합니다.'))
+		.addSubcommand(subcommand => subcommand.setName('추가').setDescription('[관리자] 인증 기능을 시작할게요! 인증 버튼은 1개만 사용 가능합니다.').addChannelOption(option => option.setName('채널').setDescription('인증 버튼을 생성하려는 채널을 선택 해주세요!').setRequired(true).addChannelTypes(ChannelType.GuildText)).addRoleOption(option => option.setName('역할').setDescription('인증 완료 시 지급할 역할을 선택 해주세요!').setRequired(true)))
+		.addSubcommand(subcommand => subcommand.setName('삭제').setDescription('[관리자]  기능을 삭제할게요! 인증 버튼은 1개만 사용 가능합니다.'))
 		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 	/**
 	 *
@@ -27,7 +27,7 @@ module.exports = {
 			guildid = doc.GuildId;
 			channelid = doc.ChannelId;
 		}
-		if (interaction.options.getSubcommand() === '설정') {
+		if (interaction.options.getSubcommand() === '추가') {
 			const error = new EmbedBuilder()
 				.setTitle('⚠ㅣ이미 인증 버튼이 있어요!')
 				.setDescription(`이미 ${ interaction.guild.name }에는 <#${ channelid }>에 인증 버튼이 있어요! **</인증 삭제:1200318998823321610>로 인증 버튼을 삭제 해주세요.**`)
@@ -55,13 +55,13 @@ module.exports = {
 				.setCustomId('btn-captcha');
 			const row = new ActionRowBuilder().addComponents(button);
 			try {
-				const data = await new CaptchaDB({
+				const database = await new CaptchaDB({
 					_id: new mongoose.Types.ObjectId(),
 					GuildId: interaction.guild.id,
 					ChannelId: channel.id,
 					RoleId: role.id,
 				});
-				data.save().catch(console.error);
+				await database.save().catch(console.error);
 				const msg = await channel.send({ embeds: [ embed ], components: [ row ] });
 				await interaction.reply({ content: `### ✅ㅣ인증 버튼을 생성했어요! 한번 확인해 보실래요? ${ msg }`, ephemeral: true });
 			} catch (err) {
@@ -99,9 +99,9 @@ module.exports = {
 						await i.reply({ content: '### ✅ㅣ인증 버튼을 삭제했어요!', ephemeral: true });
 					}
 				});
-				collector.on('end', () => {
+				collector.on('end', async () => {
 					button.setDisabled(true);
-					interaction.editReply({ content: '### ⛔ㅣ시간이 지나 사용이 불가합니다!', components: [ row ] });
+					await interaction.editReply({ content: '### ⛔ㅣ시간이 지나 사용이 불가합니다!', components: [ row ] });
 				});
 			} else {
 				const error = new EmbedBuilder()

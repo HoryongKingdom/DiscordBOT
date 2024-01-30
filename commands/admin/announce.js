@@ -1,14 +1,14 @@
 const {
 	SlashCommandBuilder,
-	PermissionFlagsBits, EmbedBuilder,
+	PermissionFlagsBits, EmbedBuilder, ChannelTypes, ChannelType,
 } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('공지')
 		.setDescription('[관리자] 공지를 작성해요.')
-		.setDefaultMemberPermissions(PermissionFlagsBits.CreateEvents)
-		.addChannelOption(option => option.setName('채널').setDescription('공지할 채널을 선택해주세요.').setRequired(true))
+		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+		.addChannelOption(option => option.setName('채널').setDescription('공지할 채널을 선택해주세요.').setRequired(true).addChannelTypes(ChannelType.GuildText))
 		.addStringOption(option => option.setName('제목').setDescription('공지의 제목을 입력해주세요.').setRequired(true))
 		.addStringOption(option => option.setName('내용').setDescription('공지의 내용을 입력해주세요.').setRequired(true))
 		.addRoleOption(option => option.setName('멘션').setDescription('멘션할 역할을 선택해주세요.').setRequired(false))
@@ -51,7 +51,7 @@ module.exports = {
 				.setTimestamp();
 			if (!interaction.options.getRole('멘션')) {
 				const msg = await channel.send({ embeds: [ embed ] });
-				success.setDescription(`성공적으로 ${ channel }에 메시지를 전송했어요! (${ msg.url }})\n확인 이모지 반응도 제가 달았으니 안심하세요 :)`);
+				success.setDescription(`성공적으로 ${ channel }에 메시지를 전송했어요! (${ msg.url })\n확인 이모지 반응도 제가 달았으니 안심하세요 :)`);
 				await interaction.reply({ embeds: [ success ], ephemeral: true });
 				msg.react('✅');
 			} else {
@@ -60,7 +60,7 @@ module.exports = {
 					embeds: [ embed ],
 				});
 				msg.react('✅');
-				success.setDescription(`성공적으로 ${ channel }에 메시지를 전송했어요! (${ msg.url }})\n확인 이모지 반응도 제가 달았으니 안심하세요 :)`);
+				success.setDescription(`성공적으로 ${ channel }에 메시지를 전송했어요! (${ msg.url })\n확인 이모지 반응도 제가 달았으니 안심하세요 :)`);
 				await interaction.reply({ embeds: [ success ], ephemeral: true });
 			}
 		} catch (err) {
