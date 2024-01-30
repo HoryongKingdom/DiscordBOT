@@ -38,27 +38,28 @@ module.exports = {
 				})
 				.setTimestamp();
 			if (roleid === undefined) return await interaction.reply({ embeds: [ error ], ephemeral: true });
-			const captcha = new Captcha(client, {
-				roleID: roleid,
-				sendToTextChannel: false,
-				addRoleOnSuccess: true,
-				kickOnFailure: false,
-				caseSensitive: true,
-				attempts: 3,
-				timeout: 30000,
-				showAttemptCount: true,
-				customPromptEmbed: new EmbedBuilder()
-					.setTitle('✅ㅣ인증을 시작합니다!').setDescription('아래 영어 + 숫자를 이 채널의 DM에 대소문자를 구분하여 입력해주세요!').setColor('Green').setTimestamp(),
-				customSuccessEmbed: new EmbedBuilder()
-					.setTitle('✅ㅣ인증 완료!').setDescription(`인증이 완료되었습니다! 인증 역할이 지급되었어요!`).setColor('Green').setTimestamp(),
-				customFailureEmbed: new EmbedBuilder()
-					.setTitle('❌ㅣ인증에 실패했어요!').setDescription('캡챠 인증에 실패했어요! 다시 시도해주세요!').setColor('Red').setTimestamp(),
-			});
+			await interaction.deferReply({ ephemeral: true });
 			try {
-				await interaction.deferReply({ ephemeral: true });
+				const captcha = new Captcha(client, {
+					roleID: roleid,
+					sendToTextChannel: false,
+					addRoleOnSuccess: true,
+					kickOnFailure: false,
+					caseSensitive: true,
+					attempts: 3,
+					timeout: 30000,
+					showAttemptCount: true,
+					customPromptEmbed: new EmbedBuilder()
+						.setTitle('✅ㅣ인증을 시작합니다!').setDescription('아래 영어 + 숫자를 이 채널의 DM에 대소문자를 구분하여 입력해주세요!').setColor('Green').setTimestamp(),
+					customSuccessEmbed: new EmbedBuilder()
+						.setTitle('✅ㅣ인증 완료!').setDescription(`인증이 완료되었습니다! 인증 역할이 지급되었어요!`).setColor('Green').setTimestamp(),
+					customFailureEmbed: new EmbedBuilder()
+						.setTitle('❌ㅣ인증에 실패했어요!').setDescription('캡챠 인증에 실패했어요! 다시 시도해주세요!').setColor('Red').setTimestamp(),
+				});
 				await interaction.editReply({ content: '### ✅ㅣDM으로 인증 메시지를 전송해드렸어요! 디스코드 API 문제로 메시지가 지연될 수 있어요!' });
 				await captcha.present(interaction.member);
 			} catch (err) {
+				await interaction.editReply({ embeds: [ error ] });
 				console.error(err);
 			}
 		} else if (interaction.customId === `btn-${ ticketid }`) {
