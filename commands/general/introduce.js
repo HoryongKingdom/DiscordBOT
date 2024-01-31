@@ -40,7 +40,7 @@ module.exports = {
 				},
 				{
 					name: '🎊 생일',
-					value: '>>> 8월 17일',
+					value: '>>> 2월 1일 [2024/2/1]',
 					inline: true,
 				},
 				{

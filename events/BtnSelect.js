@@ -129,7 +129,7 @@ module.exports = {
 						],
 					});
 					await make.send({
-						content: `### ${ interaction.user }님이 티켓을 열었어요! <&${ mention }>을 호출했으니 내용을 입력 후 기다려주세요 :)\n티켓을 닫으려면 아래의 버튼을 눌러주세요!\n이 티켓의 번호: +${ ticketid }`,
+						content: `### ${ interaction.user }님이 티켓을 열었어요! <@&${ mention }>을 호출했으니 내용을 입력 후 기다려주세요 :)\n티켓을 닫으려면 아래의 버튼을 눌러주세요!\n이 티켓의 번호: +${ ticketid }`,
 						components: [ row ],
 					});
 					await interaction.reply({ content: `### ✅ㅣ${ make }에 티켓을 열었어요! 이동해주세요!`, ephemeral: true });
@@ -152,7 +152,7 @@ module.exports = {
 			try {
 				if (interaction.channel.name.includes('보관')) return await interaction.editReply({ content: '### ❌ㅣ이미 보관 처리 된것 같아요!' });
 				await CaptchaDB.deleteOne(data);
-				await interaction.editReply({ content: '### ✅ㅣ티켓을 보관처리 했어요!\n티켓 삭제는 직접 채널을 삭제해주세요!\n티켓 삭제 및 보관 처리 기능은 추후에 추가될 예정입니다.' });
+				await interaction.editReply({ content: `### ✅ㅣ${ interaction.user }님이 티켓을 보관처리 했어요!\n티켓 삭제는 직접 채널을 삭제해주세요!\n티켓 삭제 및 보관 처리 기능은 추후에 추가될 예정입니다.` });
 				await interaction.channel.setName(`보관-${ interaction.channel.name }`);
 				await interaction.channel.permissionOverwrites.edit(interaction.user.id, { ViewChannel: false });
 				await interaction.channel.permissionOverwrites.edit(interaction.user.id, { SendMessages: false });

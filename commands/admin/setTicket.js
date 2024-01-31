@@ -8,7 +8,6 @@ const {
 } = require('discord.js');
 const mongoose = require('mongoose');
 const TicketDB = require('../../Schema/Ticket');
-const CaptchaDB = require('../../Schema/Captcha');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -41,11 +40,14 @@ module.exports = {
 			const channel = interaction.options.getChannel('채널');
 			const category = interaction.options.getChannel('카테고리');
 			const limit = interaction.options.getBoolean('티켓제한');
-			const mention = interaction.options.getRole('멘션');
+			let mention = interaction.options.getRole('멘션');
+			if (mention) {
+				mention = mention.id;
+			}
 			
 			const error = new EmbedBuilder()
 				.setTitle('⚠ㅣ이미 티켓이 있어요!')
-				.setDescription(`이미 ${ interaction.guild.name }에는 이미 1개 이상의 티켓이 있어요! **</티켓 삭제:1201049031753871451>로 티켓을 삭제 해주세요.**`)
+				.setDescription(`이미 ${ interaction.guild.name }에는 이미 1개 이상의 티켓이 있어요! **</티켓 삭제:1201898317714575430>로 티켓을 삭제 해주세요.**`)
 				.setColor('Red')
 				.setFooter({
 					text: interaction.user.displayName,
@@ -63,7 +65,7 @@ module.exports = {
 					ChannelId: channel.id,
 					CategoryId: category.id,
 					IfOpened: limit,
-					mention,
+					mention: mention,
 				});
 				await database.save().catch(console.error);
 				const embed = new EmbedBuilder()
@@ -101,7 +103,7 @@ module.exports = {
 					.setLabel('삭제하기')
 					.setEmoji('⛔')
 					.setStyle(ButtonStyle.Danger)
-					.setCustomId('btn-captcha-delete');
+					.setCustomId('btn-ticket-delete');
 				const row = new ActionRowBuilder().addComponents(button);
 				await interaction.reply({ content: '### ⛔ㅣ티켓을 정말로 삭제하시겠습니까?', components: [ row ] });
 				
@@ -112,19 +114,20 @@ module.exports = {
 					time: 5000,
 				});
 				collector.on('collect', async i => {
-					if (i.customId === 'btn-captcha-delete') {
+					if (i.customId === 'btn-ticket-delete') {
 						await TicketDB.deleteOne(data);
 						await i.reply({ content: '### ✅ㅣ티켓을 삭제했어요!', ephemeral: true });
+						button.setDisabled(true);
+						await interaction.editReply({
+							content: `### ⛔ㅣ${ interaction.user }가 티켓을 삭제했습니다!`,
+							components: [ row ],
+						});
 					}
-				});
-				collector.on('end', async () => {
-					button.setDisabled(true);
-					await interaction.editReply({ content: '### ⛔ㅣ시간이 지나 사용이 불가합니다!', components: [ row ] });
 				});
 			} else {
 				const error = new EmbedBuilder()
 					.setTitle('⚠ㅣ티켓이 없는 것 같아요!')
-					.setDescription(`${ interaction.guild } 서버에는 인증 버튼이 없는 것 같아요! </인증 설정:1200318998823321610>으로 인증 버튼을 생성해주세요!`)
+					.setDescription(`${ interaction.guild } 서버에는 티켓이 없는 것 같아요! </티켓 추가:1200318998823321610>으로 인증 버튼을 생성해주세요!`)
 					.setColor('Red')
 					.setFooter({
 						text: '이 기능은 아직 Beta에요! 오류가 발생한다면 서포트 서버에서 문의해주세요!',
