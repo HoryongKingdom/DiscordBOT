@@ -55,15 +55,23 @@ module.exports = {
 				.setCustomId('btn-captcha');
 			const row = new ActionRowBuilder().addComponents(button);
 			try {
-				const database = await new CaptchaDB({
-					_id: new mongoose.Types.ObjectId(),
-					GuildId: interaction.guild.id,
-					ChannelId: channel.id,
-					RoleId: role.id,
-				});
-				await database.save().catch(console.error);
-				const msg = await channel.send({ embeds: [ embed ], components: [ row ] });
-				await interaction.reply({ content: `### ✅ㅣ인증 버튼을 생성했어요! 한번 확인해 보실래요? ${ msg }`, ephemeral: true });
+				const gendy = interaction.guild.roles.cache.find(role => role.name === '젠디');
+				if (gendy.position > role.position) {
+					const database = await new CaptchaDB({
+						_id: new mongoose.Types.ObjectId(),
+						GuildId: interaction.guild.id,
+						ChannelId: channel.id,
+						RoleId: role.id,
+					});
+					await database.save().catch(console.error);
+					const msg = await channel.send({ embeds: [ embed ], components: [ row ] });
+					await interaction.reply({
+						content: `### ✅ㅣ인증 버튼을 생성했어요! 한번 확인해 보실래요? ${ msg }`,
+						ephemeral: true,
+					});
+				} else {
+					await interaction.reply({ content: `### ❗ㅣ젠디의 기본 역할이 ${ role }보다 위에 있어야해요!` });
+				}
 			} catch (err) {
 				const error = new EmbedBuilder()
 					.setTitle('⚠ㅣ인증 버튼을 전송하는데 오류가 발생했어요!')
@@ -97,16 +105,17 @@ module.exports = {
 					if (i.customId === 'btn-captcha-delete') {
 						await CaptchaDB.deleteOne(data);
 						await i.reply({ content: '### ✅ㅣ인증 버튼을 삭제했어요!', ephemeral: true });
+						button.setDisabled(true);
+						await interaction.editReply({
+							content: `### ⛔ㅣ${ interaction.user }가 인증 버튼을 삭제했습니다!`,
+							components: [ row ],
+						});
 					}
-				});
-				collector.on('end', async () => {
-					button.setDisabled(true);
-					await interaction.editReply({ content: '### ⛔ㅣ시간이 지나 사용이 불가합니다!', components: [ row ] });
 				});
 			} else {
 				const error = new EmbedBuilder()
 					.setTitle('⚠ㅣ인증 버튼이 없는 것 같아요!')
-					.setDescription(`${ interaction.guild } 서버에는 인증 버튼이 없는 것 같아요! </인증 설정:1200318998823321610>으로 인증 버튼을 생성해주세요!`)
+					.setDescription(`${ interaction.guild } 서버에는 인증 버튼이 없는 것 같아요! </인증 추가:1200318998823321610>으로 인증 버튼을 생성해주세요!`)
 					.setColor('Red')
 					.setFooter({
 						text: '이 기능은 아직 Beta에요! 오류가 발생한다면 서포트 서버에서 문의해주세요!',
